@@ -27,7 +27,7 @@
 [image3]: ./calibration_images/example_rock1.jpg 
 [image4]: ./thresh.png
 [video]: ./video.jpg
-[mask]: ./mask.jpg
+[mask]: ./mask.png
 
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/916/view) Points
