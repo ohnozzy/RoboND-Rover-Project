@@ -26,6 +26,9 @@
 [image2]: ./calibration_images/example_grid1.jpg
 [image3]: ./calibration_images/example_rock1.jpg 
 [image4]: ./thresh.png
+[video]: ./video.jpg
+[mask]: ./mask.jpg
+
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/916/view) Points
 ### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
@@ -46,14 +49,21 @@ It first converts img from BGR color space to HSV color space using the `cv2.cvt
 
 Since the rocks are yellow, it is easier to specify the color range for yellow in HSV space than BGR space.
 
+The image below shows the result. The upper left image is the camera input after perspective transformation. The upper right one is the navigable area identified by `color_thresh` function. The bottom left is the result of overlaying the upper right image on top of the upper left image. The bottom right one shows the rock location identified by `color_thresh`
 
  
 ![color_thresh result][image4]
 
 #### 1. Populate the `process_image()` function with the appropriate analysis steps to map pixels identifying navigable terrain, obstacles and rock samples into a worldmap.  Run `process_image()` on your test data using the `moviepy` functions provided to create video output of your result. 
-And another! 
 
-![alt text][image2]
+It first use `perspect_transform` to transform the camera image to topdown view. Then it use `color_thresh` with 3 color ranges defined in `path_color`,`rock_color` and `obstacle_color` to detect navigable area, rocks and obstacles.
+
+Since some areas are always dark after `perspect_transform` and the distance and angle to the objects far away cannot be accurately measured. The mask below is applied to the detection result. (idealy it should be a circular sector.)
+![mask][mask] 
+
+Then the results are translated to rover coordinates by `rover_coords` and then to world coordinates by `pix_to_world`. Then the 3 channels of `worldmap` are updated with the world coordinates of the navigable area, rocks and obstacles. Each object occupies one channel. Whenever an object is detected, the corresponding channel of the pixel on the worldmap is incremented by 1. A pixel is classified as navigable area, rock or obstacle base on the channel with the highest count.
+
+![process_image][video]
 ### Autonomous Navigation and Mapping
 
 #### 1. Fill in the `perception_step()` (at the bottom of the `perception.py` script) and `decision_step()` (in `decision.py`) functions in the autonomous mapping scripts and an explanation is provided in the writeup of how and why these functions were modified as they were.
