@@ -28,6 +28,7 @@
 [image4]: ./thresh.png
 [video]: ./video.jpg
 [mask]: ./mask.png
+[result]: ./autoresult.png
 
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/916/view) Points
@@ -68,15 +69,45 @@ Then the results are translated to rover coordinates by `rover_coords` and then 
 
 #### 1. Fill in the `perception_step()` (at the bottom of the `perception.py` script) and `decision_step()` (in `decision.py`) functions in the autonomous mapping scripts and an explanation is provided in the writeup of how and why these functions were modified as they were.
 
+The `perception_step()` is nearly the same as `process_image()` except that the rover coordinates of the navigable area is also transformed to polar coordinate and then assigned to `Rover.nav_dists` and `Rover.nav_angles`.
+
+The support function `create_output_images(Rover)` is modified.
+
+```python
+plotmap[:, :, 2] = navigable
+```
+
+is changed to
+ 
+```python
+plotmap[:, :, 2] = 255 * likely_nav
+```
+So that the location is considered as navigable only when `navigable > obstacle`.
+
+No change is made to `decision_step()`.
+
 
 #### 2. Launching in autonomous mode your rover can navigate and map autonomously.  Explain your results and how you might improve them in your writeup.  
 
 **Note: running the simulator with different choices of resolution and graphics quality may produce different results, particularly on different machines!  Make a note of your simulator settings (resolution and graphics quality set on launch) and frames per second (FPS output to terminal by `drive_rover.py`) in your writeup when you submit the project so your reviewer can reproduce your results.**
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+##### Graphics Parameters
+* Screen Resolution: `640 X 480`
+* Graphics Quality: Fast
+* FPS: 16
 
+##### Result
+* Mapped: 40~60%
+* Fidelity: 90% 
+* located rocks: >1
 
+![result][result]
 
-![alt text][image3]
+Fidelity is about 90%. However, Mapped area fluctuates quite a lot depending on the initial pose. The `decision_step` often get trapped into circle instead of exploring the whole map. 
+
+##### Improvement
+
+In order to fully explore the map, the `decision_step` should use a path finding algorithm like Dijkstra's algorithm to find a path from the current location to an unmapped location and then follow the path. 
+
 
 
